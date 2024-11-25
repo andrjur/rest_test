@@ -1,23 +1,24 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi.staticfiles import StaticFiles
+from .api.routes import router  # Импортируем маршруты
+from .database import engine, Base  # Импортируем базу данных
+from .utils.logger import logger  # Импортируем логгер
+
+# Создаем базу данных (если это необходимо)
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-class Task(BaseModel):
-    title: str
-    status: str = "Новая задача"
+# Подключаем статические файлы
+app.mount("/static", StaticFiles(directory="src/task_manager/static"), name="static")
 
-@app.post("/tasks")
-async def create_task(task: Task):
-    # Логика для добавления задачи в базу данных
-    pass
+@app.on_event("startup")
+async def startup_event():
+    logger.info("Запуск приложения...")
 
-@app.get("/tasks/{task_id}")
-async def get_task(task_id: int):
-    # Логика для получения информации о задаче
-    pass
+@app.on_event("shutdown")
+async def shutdown_event():
+    logger.info("Остановка приложения...")
 
-@app.get("/tasks")
-async def get_tasks(status: str = None):
-    # Логика для получения списка задач с фильтрацией по статусу
-    pass
+# Подключаем маршруты
+app.include_router(router)

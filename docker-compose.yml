@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:80"  # Пробрасываем порт 80 контейнера на порт 8000 хоста
+    depends_on:
+      - db
+      - rabbitmq  # Добавляем зависимость от RabbitMQ
+
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: task_manager
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"  # Порт RabbitMQ
+      - "15672:15672"  # Порт управления RabbitMQ
+
+    volumes:
+      - ./init-rabbitmq.sh:/init-rabbitmq.sh
+    command: ["bash", "/init-rabbitmq.sh"]
+
+volumes:
+  postgres_data:
