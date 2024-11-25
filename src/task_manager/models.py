@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String
-from database import Base  # Предполагается, что у вас есть файл с настройками базы данных
+from .database import Base  # Предполагается, что у вас есть файл с настройками базы данных
 
 class TaskModel(Base):
     __tablename__ = "tasks"

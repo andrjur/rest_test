@@ -1,5 +1,6 @@
 from fastapi import APIRouter
-from .schemas import Task  # Импортируйте схемы из schemas.py
+from typing import List, Optional
+from ..schemas import Task  # Используйте относительный импорт для схем
 
 router = APIRouter()
 
